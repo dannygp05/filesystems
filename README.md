@@ -1,4 +1,4 @@
-# filesystems
+﻿# filesystems
 
 
 La idea de este ejercicio es que entre todos elaboremos un documento que describa de manera general algunos de los sistemas de archivos que existen actualmente para linux.
@@ -26,7 +26,7 @@ iso9660  |  Humberto Chávez
 minux  |  
 msdos  |  
 vfat  |  
-hpfs  |  
+hpfs  |  Raul Escalante
 nfs  |  
 swap  |  Emmanuel Zúñiga
 sysv  |  
