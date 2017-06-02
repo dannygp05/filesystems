@@ -1,1 +1,94 @@
 BTRFS
+Introducción
+
+Un ¨Filesystem¨ o sistema de archivos es un medio par organizar los datos que se espera que se guarden después de que una aplicación o programa termine, al proporcionar procedimientos para almacenar, recuperar y/o actualizar. Así como la gestión del espacio disponible en el medio o dispositivo que los tendrá. Es la forma de organizar los datos de una forma eficiente y esta sintonizado con las características especificas del medio.  Los dispositivos que se usan para guardar los datos tienen particiones y cada partición individual se puede configurar mediante uno de los sistemas de archivos disponibles. Y cada sistema de archivos presenta sus propias ventajas, desventajas.  Para este texto hablaremos sobre el sistema de archivos BTRFS. 
+La historia de los sistemas de ficheros para el núcleo Linux comienza en 1992, cuando Rémi Card diseña un sistema de ficheros adecuado para Linux y que sustituya al académico sistema Minix.
+Este sistema de ficheros se denominó ext (de ext-endido), y la historia de este sistema de ficheros está ligada al desarrollo del núcleo Linux. Otros sistemas de ficheros aparecieron por el camino (XFS, ReiserFS,...), pero indudablemente ext ha ido solucionando las limitaciones que se le han ido achacando. Sin embargo en 2007 se produce una crisis en este área del núcleo. La cuarta versión de ext no es todavía estable y el resto de sistemas adolece de algunas limitaciones que serían subsanadas en ext4. Esto favorece la aparición de proyectos alternativos como btrfs que será pronto un lugar en el que trabajar para ofrecer a Linux un sistema de ficheros de la talla de ZFS de Sun, un sistema de ficheros de referencia entonces.
+BTRFS, desarrollado por Oracle corp., e introducido el 12 de junio de 2007. Y en febrero de 2009, BTRFS tuvo un crecimiento en su desarrollo y se puso disponible para su evaluación, Y la versión 0.19 fue publicado en junio de 2009, con una licencia GPL
+
+BTRFS
+BTRFS, de las siglas B-tree FileSystem o también conocido como  ¨Better FS¨, es un sistema de archivos con funciones similares al ZFS de Sun/Oracle e ideas de diseño de Reiser4 - así lo describe Theodore Ts´o (desarrollador de los sistemas ext3 y ext4). Se habla qu BTRFS, pretende ser uno de los sistemas de archivos de GNU/Linux, por el cual comienza ofreciendo la posibilidad de instalarlo como sistema de archivos en sus particiones root, en las distribuciones más importantes de GNU/Linux como Red Hat y SUSE que para las distribuciones en el 2014 cambiaron para ofrecer los sistemas de archivos BRTFS y XFS.
+BTRFS, usa la tecnica de ¨copy-on-write¨, (copiar al escribir) o también abreviado como ¨COW¨, su aparición tiene el objetivo de sustituir al sistema de archivos ¨ext3¨, eliminando el mayor número de sus limitaciones, es especial el tamaño máximo de los ficheros, además de la adopción de nuevas tecnologías no soportadas por ext3, integrada con funciones de tolerancia a fallos, reparación y facilidad de administración.
+
+
+Principales características
+Máxima dimensión de archivo: 16 EiB (exbibytes o exabytes)
+Máximo número de archivos: 2^64
+Tamaño máximo del nombre de archivo: 256 bytes
+Tamaño máximo del volumen: 16 EiB
+Caracteres permitidos en nombre de archivos: Todos los bytes excepto NULL y ´/´
+Empaquetado eficiente en espacio de archivos pequeños y directorios indexados
+Asignación dinámica de inodos (no se fija un número máximo de archivos al crear el sistema de archivos)
+Snapshots escribibles y snapshots de snapshots
+Subvolúmenes (raíces del sistema de archivos internas separadas)
+Mirroring y Striping a nivel de objeto
+Compresión transparente
+Cifrado transparente
+Copy-on-write (COW) del registro de todos los datos y metadatos
+Checksums en datos y metadatos (crc32c)
+Gran integración con device-mapper para soportar múltiples dispositivos, con varios algoritmos de RAID incluidos
+Comprobación del sistema de archivos sin demotor y comprobación muy rápida del sistema de archivos desmontado
+Copias de seguridad incrementales eficientes y mirrooring del sistema de archivos
+Actualización desde ext3 a BTRFS, y re conversión a ext3 al momento de la actualización
+Modo optimizado para SSD
+De fragmentación sin desmontar
+Exporta información del sistema de archivos a través de sysfs (características y perfiles de asignación)
+Mejora opcional en el formato de discos incompatibles con el objeto de acelerar el sistema
+Añadida la opción para el emparejamiento de opciones de montaje
+Soporte de manera nativa RAID0, RAID1,RAID10
+
+Según el articulo publicado por MuyLinux titulado ¨Sistemas de archivos en Linux: es hora de dejar ext4 por BTRFS y XFS? el 23 de enero 2015 , hace mención que BTRFS está llamado a ser ¨el sistema de los administradores de sistemas¨, ref. http://www.muylinux.com/2015/01/23/sistema-de-archivos-linux-ext4-btrfs-xfs, pero por encima de todo lo hace por características avanzadas, en general, no van dirigidas a mejorar el rendimiento, sino a la gestión y seguridad del almacenamiento
+
+
+Comando básico del sistema de archivos
+Actualmente el comando btrfs remplaza los comandos anteriores btrfsctl y btrfs-vol
+
+mkfs.btrfs:  crear el sistema de archivos
+btrfs: Programa de control para crear los snapshots, subvolumenes y escaneo de dispositivos
+btrfsck: verificación limitado al árbol del sistema de archivos
+btrfs-debug-tree: Muestra todo los metadatos del sistema de archivos
+
+ejemplos
+
+Escaneo de dispositivos
+# btrfs  device  scan
+# btrfs  device scan /dev/sda
+
+Montar 
+# mount  -t  btrfs  /dev/sda2  /mnt/btrfs
+
+En Snapshots y subvolumenes
+# btrfs subvolume create /mnt/btrfs/new_subvol
+# btrfs subvolume snapshot /mnt/btrfs /mnt/btrfs/snapshot_of_root
+
+Montar un subvolumen
+#  mount -t btrfs -o subvol=new_subvol /dev/sda2 /mnt/new_subvol
+#  mount -t btrfs -o subvol=snapshot_of_root /dev/sda2 /mnt/snap
+
+Verificación
+# btrfs-debug-tree /dev/sda2 >& big_output_file
+# btrfs-image -c 9 /dev/sda2 /tmp/btrfs_dump.z
+
+Recomendaciones publicadas para su uso
+Btrfs ya se considera estable, lo aclararon en su página oficial, así que:
+Si tienen una PC un poco vieja, quédense con ext4
+Si tienen algo más nuevo con SSD, usen btrfs.
+Tengan en cuenta que planean mejorar su integración con cada nuevo Kernel Linux, así que quizá en el futuro sea una buena idea probarlo, así que aunque ahora tengan hardware viejo, puede que en el futuro su velocidad supere a la de ext4, pero en este momento, al menos, es poco recomendable.
+
+
+
+Anexos
+COW: (Copy On Write), Copia en escritura
+SNAPSHOTS: Fotografía del estado del volumen/sistema en un momento determinado 
+RAID: (Redundat Array of Inexpensive Disk), conjunto redundate de discos
+SSD: (Solid State Drive), Dispositivo de estado solido
+sysfs: del sistema de archivo virtual, evolución de /proc, sistema virtual que documenta al núcleo del sistema y estado de procesos
+
+Referencias
+https://btrfs.wiki.kernel.org
+https://docs.oracle.com/cd/E37670_01/E37355/html/ol_about_btrfs.html
+https://www.unocero.com/2013/04/28/el-nuevo-sistema-de-archivos-de-linux-btrfs/
+http://www.muylinux.com/2015/01/23/sistema-de-archivos-linux-ext4-btrfs-xfs
+http://www.tecnoinver.cl/btrfs-un-sistema-de-archivos-para-linux/
+https://blog.desdelinux.net/btrfs-usarlo-no-usarlo/
+http://apimadrid.org/nibbler/documentos/articulos/pdf/btrfs.pdf
